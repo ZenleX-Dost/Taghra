@@ -8,6 +8,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const { Server } = require('socket.io');
+require('./config/firebase');
 
 // Import routes
 const authRoutes = require('./routes/auth');
