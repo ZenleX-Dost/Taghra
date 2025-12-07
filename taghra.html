@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taghra - Hackactus Presentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* 1. SETUP & RESET */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #1e293b;
+            /* Dark slate outer background */
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 1fr;
+            margin: 0;
+            min-height: 100vh;
+            padding: 20px 0;
+            place-items: center;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* 2. CORE SLIDE CONTAINER */
+        .slide-container {
+            background-color: #0f172a;
+            /* Deep Night Blue Background */
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            height: 720px;
+            justify-content: center;
+            overflow: hidden;
+            padding: 60px;
+            position: relative;
+            width: 1280px;
+            color: #f1f5f9;
+            /* Light text */
+        }
+
+        /* Background Accents (Glows) */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .slide-container::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .slide-container>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 3. TYPOGRAPHY */
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            color: #fff;
+        }
+
+        h1 {
+            font-size: 80px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            line-height: 1;
+            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .slide-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            color: #f8fafc;
+            border-left: 5px solid #f59e0b;
+            /* Orange Accent */
+            padding-left: 20px;
+        }
+
+        h3 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #e2e8f0;
+        }
+
+        p,
+        li,
+        td,
+        th,
+        .label {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #94a3b8;
+            /* Muted text for readability */
+        }
+
+        strong {
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        /* 4. LAYOUTS */
+
+        /* Title Layout */
+        .title-layout {
+            text-align: left;
+            max-width: 65%;
+        }
+
+        .title-layout .subtitle {
+            font-size: 24px;
+            color: #f59e0b;
+            /* Orange Accent */
+            margin-top: 20px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Content Area - Flex Grow for consistancy */
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* Bleed Image Right */
+        .slide-container.bleed-image-layout {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-items: start;
+            padding: 0;
+            gap: 0;
+        }
+
+        .slide-container.bleed-image-layout>.content-container {
+            padding: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .slide-container.bleed-image-layout>.image-container {
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+
+        .slide-container.bleed-image-layout img.bleed-image-side {
+            width: 100%;
+            height: 100%;
+            max-height: 720px;
+            object-fit: cover;
+        }
+
+        .overlay-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, #0f172a 0%, transparent 50%);
+        }
+
+        /* Tiled Content (Icons) */
+        /* Modified for Grid to support 4 items better */
+        .tiled-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            width: 100%;
+            align-items: stretch;
+        }
+
+        .tile {
+            background: rgba(30, 41, 59, 0.5);
+            /* Semi-transparent tile */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tile h3 {
+            font-size: 24px;
+        }
+
+        .tile p {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .tile .icon {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+
+        .icon-food {
+            color: #f59e0b;
+        }
+
+        .icon-health {
+            color: #10b981;
+        }
+
+        .icon-admin {
+            color: #3b82f6;
+        }
+
+        .icon-fix {
+            color: #ef4444;
+        }
+
+        /* Two Column */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .two-column.tiled>div {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 40px;
+            height: 100%;
+        }
+
+        /* Image Wrapper */
+        .image-wrapper {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            height: 400px;
+            width: 100%;
+            position: relative;
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* For app screenshots */
+        }
+
+        .image-wrapper.cover img {
+            object-fit: cover;
+            /* For generic photos */
+        }
+
+        /* Highlighted Numbers */
+        .highlight-numbers-layout {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            text-align: center;
+        }
+
+        .number-card {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.3) 0%, rgba(15, 23, 42, 0) 100%);
+            border-top: 2px solid #3b82f6;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .number-card .number {
+            font-family: 'Outfit', sans-serif;
+            font-size: 64px;
+            font-weight: 700;
+            color: #fff;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .number-card.accent-1 .number {
+            color: #f59e0b;
+            border-color: #f59e0b;
+        }
+
+        /* Orange */
+        .number-card.accent-2 .number {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        /* Red */
+        .number-card.accent-3 .number {
+            color: #10b981;
+            border-color: #10b981;
+        }
+
+        /* Green */
+        .number-card .label {
+            font-size: 20px;
+            color: #cbd5e1;
+        }
+
+        /* Charts */
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            list-style: none;
+            padding: 0;
+            margin-left: 40px;
+        }
+
+        .legend li {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+        }
+
+        .color-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            margin-right: 12px;
+        }
+
+        /* Timeline */
+        .timeline-layout {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 40px;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #334155;
+            z-index: 0;
+        }
+
+        .timeline-item {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            flex: 1;
+        }
+
+        .timeline-dot {
+            width: 44px;
+            height: 44px;
+            background: #0f172a;
+            border: 4px solid #3b82f6;
+            border-radius: 50%;
+            margin: 0 auto 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .timeline-item h3 {
+            font-size: 20px;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .timeline-item p {
+            font-size: 16px;
+            padding: 0 20px;
+        }
+
+        /* Full Background */
+        .full-bg-image {
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+        }
+
+        .full-bg-overlay {
+            background: rgba(15, 23, 42, 0.85);
+            /* Heavy dark overlay */
+            padding: 60px;
+            border-radius: 16px;
+            display: inline-block;
+            backdrop-filter: blur(5px);
+        }
+
+        /* SVG Charts */
+        .area-chart-svg .grid line {
+            stroke: #334155;
+            stroke-dasharray: 4;
+        }
+
+        .area-chart-svg .axis-labels text {
+            fill: #94a3b8;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .area-chart-svg .area-fill {
+            fill-opacity: 0.3;
+        }
+
+        .area-chart-svg .line-stroke {
+            fill: none;
+            stroke-width: 3;
+            stroke-linecap: round;
+        }
+
+        /* Styled Bullets */
+        .styled-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .styled-list li {
+            background: rgba(30, 41, 59, 0.4);
+            margin-bottom: 15px;
+            padding: 20px 20px 20px 60px;
+            border-radius: 8px;
+            position: relative;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .styled-list li i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3b82f6;
+            font-size: 20px;
+        }
+
+        .styled-list li strong {
+            display: block;
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #f1f5f9;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Slide 1: Title_Slide -->
+    <!-- Background Image: Abstract Neon Map / City Night -->
+    <div class="slide-container full-bg-image" id="slide1"
+        style="background-image: url('https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?q=80&w=2070&auto=format&fit=crop');">
+        <div class="content-overlay full-bg-overlay" style="max-width: 800px; text-align: left;">
+            <h1 style="margin-bottom: 10px;">Taghra</h1>
+            <p class="subtitle" style="color: #f59e0b; font-size: 28px; font-weight: 700; margin-bottom: 20px;">Dossier
+                de Compétition Hackactus</p>
+            <p style="color: #cbd5e1; font-size: 24px;">Rendre visible l'invisible : La première plateforme Civic Tech
+                de proximité en temps réel.</p>
+        </div>
+    </div>
+
+    <!-- Slide 2: Bleed_Image_Right (Problem) -->
+    <!-- Layout: Bleed_Image_Right. Content: Problem statement. Image: Stressed person at night/Phone -->
+    <div class="slide-container bleed-image-layout" id="slide2">
+        <div class="content-container">
+            <h2 class="slide-title" style="border-color: #ef4444;">La Problématique</h2>
+            <div class="content-area">
+                <h3 style="color: #fff; font-size: 36px; line-height: 1.2;">L'inefficacité de l'accès aux services
+                    essentiels</h3>
+                <p style="margin-top: 20px;">Chaque jour, des milliers de citoyens perdent un temps précieux à chercher
+                    des services : un repas tardif, une urgence médicale, ou un document administratif.</p>
+                <p style="margin-top: 20px; border-left: 3px solid #ef4444; padding-left: 20px; color: #fca5a5;">
+                    "Il est 3h du matin, une fuite d'eau éclate ou vous avez faim. Qui appeler ?"
+                </p>
+                <p style="margin-top: 20px;">Cette déconnexion génère du stress, des déplacements inutiles et maintient
+                    l'économie informelle dans l'ombre.</p>
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="overlay-gradient"></div>
+            <img class="bleed-image-side"
+                src="https://images.unsplash.com/photo-1555212697-194d092e3b8f?q=80&w=1964&auto=format&fit=crop"
+                alt="Personne utilisant son téléphone la nuit">
+        </div>
+    </div>
+
+    <!-- Slide 3: Tiled_Text_With_Icons (Solution) -->
+    <div class="slide-container" id="slide3">
+        <h2 class="slide-title" style="border-color: #10b981;">La Solution Taghra</h2>
+        <div class="content-area">
+            <p
+                style="text-align: center; margin-bottom: 20px; max-width: 800px; margin-left: auto; margin-right: auto;">
+                Une cartographie dynamique connectant les citoyens aux piliers essentiels de la vie urbaine.
+            </p>
+            <div class="tiled-content">
+                <div class="tile">
+                    <div class="icon icon-food"><i class="fa-solid fa-utensils"></i></div>
+                    <h3>Alimentation</h3>
+                    <p>Snacks et food trucks ouverts. Menus digitalisés et commande "coupe-file".</p>
+                </div>
+                <div class="tile">
+                    <div class="icon icon-fix"><i class="fa-solid fa-wrench"></i></div>
+                    <h3>Dépannage</h3>
+                    <p><strong>Nouveau :</strong> Localisation de plombiers et électriciens disponibles en urgence.</p>
+                </div>
+                <div class="tile">
+                    <div class="icon icon-health"><i class="fa-solid fa-heart-pulse"></i></div>
+                    <h3>Santé</h3>
+                    <p>Médecins, vétérinaires de garde et pharmacies avec avis vérifiés.</p>
+                </div>
+                <div class="tile">
+                    <div class="icon icon-admin"><i class="fa-solid fa-landmark"></i></div>
+                    <h3>Administration</h3>
+                    <p>Guide intelligent vers les services publics (Mouqata'a) selon le besoin.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Highlighted_Numbers (Market Stats) -->
+    <div class="slide-container" id="slide4">
+        <h2 class="slide-title">Le Marché et l'Urgence</h2>
+        <div class="content-area">
+            <div class="highlight-numbers-layout">
+                <div class="number-card accent-1">
+                    <span class="number">36%</span>
+                    <span class="label">du PIB Marocain issu du secteur informel (Commerce invisible)</span>
+                </div>
+                <div class="number-card accent-2">
+                    <span class="number">37 Mds</span>
+                    <span class="label">d'heures perdues par an dans les files d'attente (Mondial)</span>
+                </div>
+                <div class="number-card accent-3">
+                    <span class="number">38%</span>
+                    <span class="label">de la population sans accès à un médecin dans un rayon de 5km</span>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 40px; font-style: italic;">Sources : HCP Maroc, OMS, Queueing
+                Theory Studies</p>
+        </div>
+    </div>
+
+    <!-- Slide 5: Image_Right_Text_Left (UX Demo) -->
+    <!-- Layout: Image_Right_Text_Left. Content: App Features. Image: App UI (Phone in hand) -->
+    <div class="slide-container" id="slide5">
+        <h2 class="slide-title">Expérience Utilisateur</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <ul class="styled-list">
+                        <li>
+                            <i class="fa-solid fa-stopwatch"></i>
+                            <strong>Option "Coupe-File" (1 DH)</strong>
+                            Pour 1 DH de plus, la commande est prioritaire. Fini l'attente devant le snack.
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-bolt"></i>
+                            <strong>Urgence Dépannage</strong>
+                            Trouvez un plombier ou électricien à proximité immédiate lors d'une panne.
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-gamepad"></i>
+                            <strong>Gamification & Engagement</strong>
+                            Système de points pour débloquer un rayon de recherche élargi (commence à 500m).
+                        </li>
+                    </ul>
+                </div>
+                <div class="image-wrapper cover">
+                    <img src="https://images.unsplash.com/photo-1526045612212-70caf35c14df?q=80&w=2070&auto=format&fit=crop"
+                        alt="Interface application mobile Taghra">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Doughnut_Chart_For_Proportions (Business Model) -->
+    <div class="slide-container" id="slide6">
+        <h2 class="slide-title">Modèle Économique (Hybride)</h2>
+        <div class="content-area">
+            <div class="chart-container">
+                <div style="display: flex; align-items: center;">
+                    <!-- CSS Conic Gradient for Doughnut -->
+                    <div style="
+                    width: 300px; height: 300px; border-radius: 50%;
+                    background: conic-gradient(
+                        #f59e0b 0% 50%,
+                        #3b82f6 50% 80%,
+                        #10b981 80% 95%,
+                        #8b5cf6 95% 100%
+                    );
+                    position: relative;
+                    display: flex; justify-content: center; align-items: center;
+                    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+                ">
+                        <!-- Inner hole -->
+                        <div
+                            style="width: 180px; height: 180px; background-color: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 24px; font-weight: 700; color: #fff;">Sources<br>Revenus</span>
+                        </div>
+                    </div>
+
+                    <ul class="legend">
+                        <li>
+                            <div class="color-box" style="background: #f59e0b;"></div><strong>Commissions
+                                Fournisseurs</strong> : <br>1 DH (si < 30DH) ou 5% (si> 30DH)
+                        </li>
+                        <li>
+                            <div class="color-box" style="background: #3b82f6;"></div><strong>Frais Utilisateurs
+                                (Coupe-file)</strong> : <br>1 DH par commande pour ne pas attendre
+                        </li>
+                        <li>
+                            <div class="color-box" style="background: #10b981;"></div><strong>Services Pro &
+                                Santé</strong> : <br>Commissions sur RDV (Plombiers, Médecins)
+                        </li>
+                        <li>
+                            <div class="color-box" style="background: #8b5cf6;"></div><strong>Publicité Locale</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Two_Column_Tiled_Text (Operations) -->
+    <div class="slide-container" id="slide7">
+        <h2 class="slide-title">Opérations : Tech & Humain</h2>
+        <div class="content-area">
+            <div class="two-column tiled">
+                <div>
+                    <h3 style="color: #3b82f6;"><i class="fa-solid fa-server"></i> La Technologie</h3>
+                    <p>Développement en <strong>React Native</strong> et <strong>Node.js</strong> pour une performance
+                        optimale sur iOS et Android.</p>
+                    <p>Algorithme de matching pour connecter instantanément l'utilisateur au technicien
+                        (plombier/électricien) le plus proche.</p>
+                </div>
+                <div>
+                    <h3 style="color: #f59e0b;"><i class="fa-solid fa-users-viewfinder"></i> Les "Subs" (Ambassadeurs)
+                    </h3>
+                    <p>Notre force de frappe terrain. Des étudiants rémunérés pour cartographier les zones grises.</p>
+                    <p>Ils enrôlent les snacks et les artisans (plombiers, électriciens) qui n'ont aucune présence
+                        digitale.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Area_Chart_For_Trends (Financials) -->
+    <div class="slide-container" id="slide8">
+        <h2 class="slide-title">Projections Financières (Année 1)</h2>
+        <div class="content-area">
+            <p style="text-align: center; margin-bottom: 20px;">Point de rentabilité (Break-even) estimé entre le mois 8
+                et 10.</p>
+            <div class="chart-container" style="width: 80%; margin: 0 auto;">
+                <svg class="area-chart-svg" viewBox="0 0 800 300" style="overflow: visible;">
+                    <defs>
+                        <linearGradient id="revenueGradient" x1="0" x2="0" y1="0" y2="1">
+                            <stop offset="0%" stop-color="#10b981" stop-opacity="0.5" />
+                            <stop offset="100%" stop-color="#10b981" stop-opacity="0" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Grid -->
+                    <g class="grid">
+                        <line x1="0" y1="250" x2="800" y2="250" /> <!-- X Axis -->
+                        <line x1="0" y1="0" x2="0" y2="250" /> <!-- Y Axis -->
+                        <line x1="0" y1="125" x2="800" y2="125" opacity="0.2" />
+                    </g>
+
+                    <!-- Data: Cost (Red Line) - Starts high (Dev), stabilizes -->
+                    <!-- M1: 40k, M3: 30k, M6: 20k, M9: 22k, M12: 25k -->
+                    <!-- Scaled to 250 height. Max 50k. 50k = y0. 0k = y250. -->
+                    <polyline class="line-stroke" points="0,50 200,100 400,150 600,140 800,125" stroke="#ef4444"
+                        fill="none" />
+                    <text x="810" y="125" fill="#ef4444" font-size="14">Coûts</text>
+
+                    <!-- Data: Revenue (Green Area) - Starts 0, exponential growth -->
+                    <!-- M1: 0, M3: 5k, M6: 15k, M9: 25k, M12: 45k -->
+                    <path class="area-fill" d="M0,250 L200,225 L400,175 L600,125 L800,25 L800,250 Z"
+                        fill="url(#revenueGradient)" />
+                    <polyline class="line-stroke" points="0,250 200,225 400,175 600,125 800,25" stroke="#10b981"
+                        fill="none" />
+                    <text x="810" y="25" fill="#10b981" font-size="14">Revenus</text>
+
+                    <!-- Break-even Point Marker roughly at M9 -->
+                    <circle cx="600" cy="132" r="6" fill="#fff" />
+                    <text x="580" y="100" fill="#fff" font-size="14">Break-even</text>
+
+                    <!-- X Axis Labels -->
+                    <g class="axis-labels">
+                        <text x="0" y="270">Mois 1 (Dev)</text>
+                        <text x="200" y="270">Mois 3 (MVP)</text>
+                        <text x="400" y="270">Mois 6</text>
+                        <text x="600" y="270">Mois 9</text>
+                        <text x="800" y="270">Mois 12 (Scale)</text>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Timeline (Roadmap) -->
+    <div class="slide-container" id="slide9">
+        <h2 class="slide-title">Roadmap de Réalisation</h2>
+        <div class="content-area">
+            <div class="timeline-layout">
+                <div class="timeline-line"></div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot">1</div>
+                    <h3>Phase 1 : MVP</h3>
+                    <p style="color: #94a3b8;">Meknès (3 Mois)<br>Dev Backend/Mobile<br>Intégration
+                        Plombiers/Elec<br>200 Testeurs</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot">2</div>
+                    <h3>Phase 2 : Croissance</h3>
+                    <p style="color: #94a3b8;">Rabat, Fès, Casa (6 Mois)<br>Partenariats 500+ commerces<br>Intégration
+                        Paiement CMI</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot">3</div>
+                    <h3>Phase 3 : Scale</h3>
+                    <p style="color: #94a3b8;">National (12 Mois)<br>15 Villes<br>Levée de fonds Série A<br>IA de
+                        Recommandation</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Styled_Bullet_Points (Impact Enactus) -->
+    <div class="slide-container" id="slide10">
+        <h2 class="slide-title">Alignement Critères ENACTUS</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="bullet-list styled-list">
+                    <ul>
+                        <li>
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                            <strong>Impact Social (5/5)</strong>
+                            Inclusion financière des commerçants informels et gain de temps pour les citoyens.
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-code"></i>
+                            <strong>Faisabilité Technique</strong>
+                            Prototype fonctionnel basé sur des technologies robustes (React Native, Node.js).
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-recycle"></i>
+                            <strong>Durabilité</strong>
+                            Modèle de revenus diversifié assurant une pérennité financière dès la première année.
+                        </li>
+                    </ul>
+                </div>
+                <!-- Using Image from retrieval as visual metaphor for impact -->
+                <div class="image-wrapper cover" style="height: 350px;">
+                    <img src="https://images.unsplash.com/photo-1582213782179-e0d53f98f230?q=80&w=2074&auto=format&fit=crop"
+                        alt="Impact social et connexion">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Full_Background_Image (Vision) -->
+    <div class="slide-container full-bg-image" id="slide11"
+        style="background-image: url('https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?q=80&w=2070&auto=format&fit=crop');">
+        <div class="content-overlay full-bg-overlay">
+            <h2 style="font-size: 56px; margin-bottom: 20px;">Notre Vision</h2>
+            <p style="font-size: 28px; color: #cbd5e1; max-width: 800px; margin: 0 auto;">
+                "Démocratiser l'accès aux services de proximité et connecter chaque citoyen à son environnement,
+                instantanément."
+            </p>
+        </div>
+    </div>
+
+    <!-- Slide 12: Q&A -->
+    <div class="slide-container" id="slide12" style="text-align: center;">
+        <h2 style="font-size: 60px; margin-bottom: 30px;">Merci de votre attention</h2>
+        <p style="font-size: 24px; color: #94a3b8; max-width: 700px; margin: 0 auto 40px auto;">
+            Rejoignez-nous pour rendre visible l'invisible et accessible l'inaccessible.
+        </p>
+
+        <div style="display: flex; justify-content: center; gap: 40px; margin-top: 40px;">
+            <div style="text-align: center;">
+                <i class="fa-solid fa-envelope" style="font-size: 32px; color: #f59e0b; margin-bottom: 10px;"></i>
+                <p style="color: #fff;">contact@Taghra.ma</p>
+            </div>
+            <div style="text-align: center;">
+                <i class="fa-solid fa-globe" style="font-size: 32px; color: #3b82f6; margin-bottom: 10px;"></i>
+                <p style="color: #fff;">www.Taghra.ma</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+```
