@@ -1,18 +1,17 @@
-// SnackSpot - Authentication Routes
-// Register, login, refresh token, etc.
+// TAGHRA - Authentication Routes
+// Register, login, refresh token using Supabase Auth
 
 const express = require('express');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
-const db = require('../config/database');
+const { supabase } = require('../config/supabase');
 const { asyncHandler, createError } = require('../middleware/errorHandler');
 const { authenticate } = require('../middleware/auth');
 
 const router = express.Router();
 
 /**
- * Generate JWT tokens
+ * Generate JWT tokens (custom tokens for backward compatibility)
  */
 const generateTokens = (userId) => {
     const accessToken = jwt.sign(
@@ -32,14 +31,14 @@ const generateTokens = (userId) => {
 
 /**
  * POST /api/auth/register
- * Register a new user
+ * Register a new user using Supabase Auth
  */
 router.post('/register',
     [
         body('email').isEmail().normalizeEmail(),
         body('password').isLength({ min: 8 }),
         body('fullName').trim().isLength({ min: 2 }),
-        body('phone').optional().isMobilePhone('ar-MA'),
+        body('phone').optional(),
         body('role').optional().isIn(['user', 'restaurant', 'doctor', 'vet', 'sub']),
     ],
     asyncHandler(async (req, res) => {
@@ -51,49 +50,69 @@ router.post('/register',
 
         const { email, password, fullName, phone, role = 'user' } = req.body;
 
-        // Check if user exists
-        const existingUser = await db.query(
-            'SELECT id FROM users WHERE email = $1',
-            [email]
-        );
+        // Create user with Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true, // Auto-confirm email for development
+            user_metadata: {
+                full_name: fullName,
+                phone,
+                role,
+            },
+        });
 
-        if (existingUser.rows.length > 0) {
-            throw createError.conflict('Email already registered');
+        if (authError) {
+            console.error('Supabase auth error:', authError);
+            if (authError.message.includes('already registered') || authError.message.includes('already exists')) {
+                throw createError.conflict('Email already registered');
+            }
+            if (authError.message.includes('Database error')) {
+                throw createError.internal('Database setup error. Please ensure the users table exists in Supabase. Run the schema SQL in the SQL Editor.');
+            }
+            throw createError.internal(authError.message);
         }
 
-        // Hash password
-        const salt = await bcrypt.genSalt(12);
-        const passwordHash = await bcrypt.hash(password, salt);
+        const authUser = authData.user;
 
-        // Create user
-        const result = await db.query(
-            `INSERT INTO users (email, password_hash, full_name, phone, role, points)
-       VALUES ($1, $2, $3, $4, $5, 0)
-       RETURNING id, email, full_name, phone, role, points, created_at`,
-            [email, passwordHash, fullName, phone, role]
-        );
+        // Create user profile in public.users table
+        const { data: profileData, error: profileError } = await supabase
+            .from('users')
+            .insert({
+                id: authUser.id,
+                email: authUser.email,
+                full_name: fullName,
+                phone: phone || null,
+                role,
+                points: 0,
+            })
+            .select()
+            .single();
 
-        const user = result.rows[0];
+        if (profileError) {
+            console.error('Profile creation error:', profileError);
+            // If profile creation fails, delete the auth user
+            await supabase.auth.admin.deleteUser(authUser.id);
+            
+            if (profileError.message.includes('relation') && profileError.message.includes('does not exist')) {
+                throw createError.internal('The users table does not exist. Please run the schema SQL in Supabase SQL Editor.');
+            }
+            throw createError.internal('Failed to create user profile: ' + profileError.message);
+        }
 
-        // Generate tokens
-        const { accessToken, refreshToken } = generateTokens(user.id);
-
-        // Store refresh token
-        await db.query(
-            'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, NOW() + INTERVAL \'30 days\')',
-            [user.id, refreshToken]
-        );
+        // Generate custom tokens for the app
+        const { accessToken, refreshToken } = generateTokens(authUser.id);
 
         res.status(201).json({
             success: true,
             message: 'Registration successful',
             user: {
-                id: user.id,
-                email: user.email,
-                fullName: user.full_name,
-                phone: user.phone,
-                role: user.role,
-                points: user.points,
+                id: authUser.id,
+                email: authUser.email,
+                fullName: fullName,
+                phone: phone,
+                role: role,
+                points: 0,
             },
             token: accessToken,
             refreshToken,
@@ -118,38 +137,60 @@ router.post('/login',
 
         const { email, password } = req.body;
 
-        // Get user
-        const result = await db.query(
-            'SELECT id, email, password_hash, full_name, phone, role, points FROM users WHERE email = $1',
-            [email]
-        );
+        // Sign in with Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
 
-        if (result.rows.length === 0) {
+        if (authError) {
+            console.error('Supabase login error:', authError);
             throw createError.unauthorized('Invalid email or password');
         }
 
-        const user = result.rows[0];
+        const authUser = authData.user;
 
-        // Verify password
-        const isValidPassword = await bcrypt.compare(password, user.password_hash);
-        if (!isValidPassword) {
-            throw createError.unauthorized('Invalid email or password');
+        // Get user profile from public.users table
+        const { data: profileData, error: profileError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', authUser.id)
+            .single();
+
+        if (profileError) {
+            console.error('Profile fetch error:', profileError);
+            // User exists in auth but not in profile, create profile
+            const { data: newProfile } = await supabase
+                .from('users')
+                .insert({
+                    id: authUser.id,
+                    email: authUser.email,
+                    full_name: authUser.user_metadata?.full_name || authUser.email.split('@')[0],
+                    phone: authUser.user_metadata?.phone || null,
+                    role: authUser.user_metadata?.role || 'user',
+                    points: 0,
+                })
+                .select()
+                .single();
         }
 
-        // Generate tokens
-        const { accessToken, refreshToken } = generateTokens(user.id);
-
-        // Store refresh token
-        await db.query(
-            'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, NOW() + INTERVAL \'30 days\')',
-            [user.id, refreshToken]
-        );
+        const user = profileData || {
+            id: authUser.id,
+            email: authUser.email,
+            full_name: authUser.user_metadata?.full_name || authUser.email.split('@')[0],
+            phone: authUser.user_metadata?.phone || null,
+            role: authUser.user_metadata?.role || 'user',
+            points: 0,
+        };
 
         // Update last login
-        await db.query(
-            'UPDATE users SET last_login = NOW() WHERE id = $1',
-            [user.id]
-        );
+        await supabase
+            .from('users')
+            .update({ last_login: new Date().toISOString() })
+            .eq('id', authUser.id);
+
+        // Generate custom tokens for the app
+        const { accessToken, refreshToken } = generateTokens(authUser.id);
 
         res.json({
             success: true,
@@ -189,30 +230,8 @@ router.post('/refresh-token',
             throw createError.unauthorized('Invalid token type');
         }
 
-        // Check if token exists in database
-        const tokenResult = await db.query(
-            'SELECT id FROM refresh_tokens WHERE token = $1 AND user_id = $2 AND expires_at > NOW()',
-            [refreshToken, decoded.userId]
-        );
-
-        if (tokenResult.rows.length === 0) {
-            throw createError.unauthorized('Refresh token expired or revoked');
-        }
-
-        // Delete old refresh token
-        await db.query(
-            'DELETE FROM refresh_tokens WHERE token = $1',
-            [refreshToken]
-        );
-
         // Generate new tokens
         const { accessToken: newAccessToken, refreshToken: newRefreshToken } = generateTokens(decoded.userId);
-
-        // Store new refresh token
-        await db.query(
-            'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, NOW() + INTERVAL \'30 days\')',
-            [decoded.userId, newRefreshToken]
-        );
 
         res.json({
             success: true,
@@ -227,15 +246,42 @@ router.post('/refresh-token',
  * Logout user and invalidate tokens
  */
 router.post('/logout', authenticate, asyncHandler(async (req, res) => {
-    // Delete all refresh tokens for this user
-    await db.query(
-        'DELETE FROM refresh_tokens WHERE user_id = $1',
-        [req.user.id]
-    );
+    // Sign out from Supabase
+    await supabase.auth.signOut();
 
     res.json({
         success: true,
         message: 'Logged out successfully',
+    });
+}));
+
+/**
+ * GET /api/auth/me
+ * Get current user profile
+ */
+router.get('/me', authenticate, asyncHandler(async (req, res) => {
+    const { data: user, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', req.user.id)
+        .single();
+
+    if (error || !user) {
+        throw createError.notFound('User not found');
+    }
+
+    res.json({
+        success: true,
+        user: {
+            id: user.id,
+            email: user.email,
+            fullName: user.full_name,
+            phone: user.phone,
+            role: user.role,
+            points: user.points,
+            avatarUrl: user.avatar_url,
+            isVerified: user.is_verified,
+        },
     });
 }));
 

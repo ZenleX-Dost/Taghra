@@ -1,4 +1,4 @@
-// SnackSpot - Profile Screen
+// TAGHRA - Profile Screen
 // User profile with points, badges, and settings
 
 import React from 'react';
@@ -81,7 +81,7 @@ const ProfileScreen = ({ navigation }) => {
         {
             id: 'about',
             icon: 'information-circle-outline',
-            label: 'About SnackSpot',
+            label: 'About TAGHRA',
             screen: 'About',
         },
     ];

@@ -1,4 +1,4 @@
-// SnackSpot - Login Screen
+// TAGHRA - Login Screen
 // Premium login screen with email/password and social login
 
 import React, { useState } from 'react';

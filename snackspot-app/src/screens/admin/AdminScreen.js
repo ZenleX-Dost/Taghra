@@ -1,4 +1,4 @@
-// SnackSpot - Admin Screen (Documents Guide)
+// TAGHRA - Admin Screen (Documents Guide)
 // Search and find administrative documents
 
 import React, { useState } from 'react';

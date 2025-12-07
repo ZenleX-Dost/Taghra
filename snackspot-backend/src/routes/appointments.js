@@ -1,4 +1,4 @@
-// SnackSpot - Appointments Routes
+// TAGHRA - Appointments Routes
 // Booking appointments with doctors/vets
 
 const express = require('express');

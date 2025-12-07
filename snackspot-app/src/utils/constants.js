@@ -1,4 +1,4 @@
-// SnackSpot - Premium Design Constants
+// TAGHRA - Premium Design Constants
 // A modern, luxurious color palette inspired by high-end apps
 
 // PREMIUM COLOR PALETTE
@@ -235,9 +235,15 @@ export const SHADOWS = {
 
 // API CONFIGURATION
 export const API_CONFIG = {
-    BASE_URL: 'https://api.snackspot.ma/v1',
+    BASE_URL: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001/api',
     TIMEOUT: 10000,
-    SOCKET_URL: 'wss://api.snackspot.ma',
+    SOCKET_URL: process.env.EXPO_PUBLIC_SOCKET_URL || 'ws://localhost:3001',
+};
+
+// SUPABASE CONFIGURATION
+export const SUPABASE_CONFIG = {
+    URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
+    ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_KEY,
 };
 
 // MAP CONFIGURATION
@@ -286,19 +292,19 @@ export const CATEGORIES = {
     HEALTH: {
         id: 'health',
         label: 'Doctors & Clinics',
-        icon: 'medical-services',
+        icon: 'heart-circle',
         color: COLORS.health,
     },
     VET: {
         id: 'vet',
         label: 'Veterinarians',
-        icon: 'pets',
+        icon: 'paw',
         color: COLORS.vet,
     },
     ADMIN: {
         id: 'admin',
         label: 'Administration',
-        icon: 'account-balance',
+        icon: 'cog',
         color: COLORS.admin,
     },
 };

@@ -1,4 +1,4 @@
-// SnackSpot - Premium Card Component
+// TAGHRA - Premium Card Component
 // A versatile card container with shadow and press support
 
 import React from 'react';

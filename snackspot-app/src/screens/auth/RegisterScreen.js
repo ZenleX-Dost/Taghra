@@ -1,4 +1,4 @@
-// SnackSpot - Register Screen
+// TAGHRA - Register Screen
 // Premium registration screen with form validation
 
 import React, { useState } from 'react';
@@ -132,12 +132,12 @@ const RegisterScreen = ({ navigation }) => {
 
     // Password strength indicator
     const renderPasswordStrength = () => {
-        if (!form.password || !passwordStrength) return null;
+        if (!form.password || !passwordStrength || !colors) return null;
 
         const strengthColors = {
-            weak: colors.error,
-            medium: colors.warning,
-            strong: colors.success,
+            weak: colors?.error || '#FF4757',
+            medium: colors?.warning || '#FFB84C',
+            strong: colors?.success || '#00C48C',
         };
 
         const strengthLabels = {
@@ -207,7 +207,7 @@ const RegisterScreen = ({ navigation }) => {
                             Create Account
                         </Text>
                         <Text style={[styles.subtitle, { color: colors.textLight }]}>
-                            Join SnackSpot and start exploring
+                            Join TAGHRA and start exploring
                         </Text>
                     </View>
 

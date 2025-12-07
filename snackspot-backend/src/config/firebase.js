@@ -1,4 +1,4 @@
-// SnackSpot - Firebase Configuration
+// TAGHRA - Firebase Configuration
 // Initialize Firebase Admin SDK
 
 const admin = require('firebase-admin');

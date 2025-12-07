@@ -1,4 +1,4 @@
-// SnackSpot - Onboarding Screen
+// TAGHRA - Onboarding Screen
 // Premium carousel onboarding with role selection
 
 import React, { useState, useRef } from 'react';
@@ -126,7 +126,7 @@ const OnboardingScreen = ({ navigation }) => {
             } else {
                 Alert.alert(
                     'Location Required',
-                    'SnackSpot needs your location to find nearby places. Please enable location in settings.',
+                    'TAGHRA needs your location to find nearby places. Please enable location in settings.',
                     [{ text: 'OK' }]
                 );
                 return false;
@@ -167,7 +167,7 @@ const OnboardingScreen = ({ navigation }) => {
     // Handle continue after role selection
     const handleContinue = async () => {
         if (!selectedRole) {
-            Alert.alert('Select a Role', 'Please select how you want to use SnackSpot.');
+            Alert.alert('Select a Role', 'Please select how you want to use TAGHRA.');
             return;
         }
 
@@ -276,7 +276,7 @@ const OnboardingScreen = ({ navigation }) => {
         >
             <SafeAreaView style={styles.roleSelectionContent}>
                 <Text style={[styles.roleTitle, { color: colors.text }]}>
-                    How will you use SnackSpot?
+                    How will you use TAGHRA?
                 </Text>
                 <Text style={[styles.roleSubtitle, { color: colors.textLight }]}>
                     Select your primary role. You can change this later.
@@ -379,7 +379,7 @@ const OnboardingScreen = ({ navigation }) => {
                         bounces={false}
                         onScroll={Animated.event(
                             [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                            { useNativeDriver: true }
+                            { useNativeDriver: false }
                         )}
                         onViewableItemsChanged={onViewableItemsChanged}
                         viewabilityConfig={viewabilityConfig}

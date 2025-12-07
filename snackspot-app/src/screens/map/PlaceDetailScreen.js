@@ -1,4 +1,4 @@
-// SnackSpot - Place Detail Screen
+// TAGHRA - Place Detail Screen
 // Detailed view of a place with menu, reviews, and actions
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -101,7 +101,7 @@ const PlaceDetailScreen = ({ navigation, route }) => {
     const handleShare = async () => {
         try {
             await Share.share({
-                message: `Check out ${place.name} on SnackSpot! ${place.address}`,
+                message: `Check out ${place.name} on TAGHRA! ${place.address}`,
             });
         } catch (error) {
             console.error('Error sharing:', error);

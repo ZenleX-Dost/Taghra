@@ -1,4 +1,4 @@
-// SnackSpot - Main Tab Navigator
+// TAGHRA - Main Tab Navigator
 // Bottom tab navigation for authenticated users
 
 import React from 'react';
@@ -74,6 +74,12 @@ const MainTabNavigator = () => {
     const { colors, isDarkMode } = useTheme();
     const { user, isSub } = useAuth();
 
+    // Ensure colors is defined
+    const safeColors = colors || {
+        primary: '#F5A623',
+        tabBarInactive: '#999',
+    };
+
     return (
         <Tab.Navigator
             initialRouteName="Map"
@@ -82,8 +88,8 @@ const MainTabNavigator = () => {
                 tabBarIcon: ({ focused, color }) => (
                     <TabIcon focused={focused} color={color} route={route} />
                 ),
-                tabBarActiveTintColor: colors.primary,
-                tabBarInactiveTintColor: colors.tabBarInactive,
+                tabBarActiveTintColor: safeColors.primary,
+                tabBarInactiveTintColor: safeColors.tabBarInactive,
                 tabBarStyle: {
                     position: 'absolute',
                     height: Platform.OS === 'ios' ? 88 : 70,
@@ -130,7 +136,7 @@ const MainTabNavigator = () => {
                     options={{
                         tabBarLabel: 'Add',
                         tabBarIcon: ({ focused }) => (
-                            <View style={[styles.addButton, { backgroundColor: colors.primary }]}>
+                            <View style={[styles.addButton, { backgroundColor: safeColors.primary }]}>
                                 <Ionicons name="add" size={28} color="#FFFFFF" />
                             </View>
                         ),

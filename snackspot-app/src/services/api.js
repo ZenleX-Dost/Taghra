@@ -1,4 +1,4 @@
-// SnackSpot - API Service
+// TAGHRA - API Service
 // Axios instance with interceptors for authentication and error handling
 
 import axios from 'axios';

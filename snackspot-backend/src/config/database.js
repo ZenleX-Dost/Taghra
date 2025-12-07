@@ -1,18 +1,24 @@
-// SnackSpot - Database Configuration
-// PostgreSQL connection with PostGIS support
+// TAGHRA - Database Configuration
+// PostgreSQL connection with PostGIS support (Supabase)
 
 const { Pool } = require('pg');
 
-// Create connection pool
+// Parse Supabase URL to get connection details
+const supabaseUrl = process.env.SUPABASE_URL || '';
+const supabaseHost = supabaseUrl.replace('https://', '').replace('.supabase.co', '') + '.supabase.co';
+
+// Create connection pool using Supabase PostgreSQL connection
+// Supabase provides direct PostgreSQL access
 const pool = new Pool({
-    host: process.env.DB_HOST || 'localhost',
+    host: process.env.DB_HOST || `db.${supabaseUrl.replace('https://', '').replace('.supabase.co', '')}.supabase.co`,
     port: parseInt(process.env.DB_PORT) || 5432,
-    database: process.env.DB_NAME || 'snackspot',
+    database: process.env.DB_NAME || 'postgres',
     user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD,
+    password: process.env.DB_PASSWORD || process.env.SUPABASE_DB_PASSWORD,
     max: 20, // Maximum number of clients in the pool
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    connectionTimeoutMillis: 5000,
+    ssl: process.env.DB_SSL === 'false' ? false : { rejectUnauthorized: false },
 });
 
 // Test connection

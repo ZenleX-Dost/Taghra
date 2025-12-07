@@ -1,4 +1,4 @@
-// SnackSpot - Theme Context
+// TAGHRA - Theme Context
 // Manages app theming (light/dark mode) and provides theme values
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
@@ -9,7 +9,7 @@ import { COLORS, FONTS, SPACING, DIMENSIONS, SHADOWS } from '../utils/constants'
 // Storage key
 const THEME_KEY = '@snackspot_theme';
 
-// Create context
+// Create context with default lightTheme to prevent undefined errors
 const ThemeContext = createContext(null);
 
 /**
@@ -225,7 +225,7 @@ export const ThemeProvider = ({ children }) => {
      */
     const theme = useMemo(() => {
         return isDarkMode ? darkTheme : lightTheme;
-    }, [isDarkMode]);
+    }, [isDarkMode]) || lightTheme;
 
     /**
      * Set theme mode
@@ -289,8 +289,22 @@ export const ThemeProvider = ({ children }) => {
  */
 export const useTheme = () => {
     const context = useContext(ThemeContext);
+    // Return default lightTheme values if context is not available
     if (!context) {
-        throw new Error('useTheme must be used within a ThemeProvider');
+        return {
+            theme: lightTheme,
+            themeMode: 'light',
+            isDarkMode: false,
+            isLoading: false,
+            setTheme: () => {},
+            toggleTheme: () => {},
+            useSystemTheme: () => {},
+            colors: lightTheme.colors,
+            fonts: lightTheme.fonts,
+            spacing: lightTheme.spacing,
+            dimensions: lightTheme.dimensions,
+            shadows: lightTheme.shadows,
+        };
     }
     return context;
 };

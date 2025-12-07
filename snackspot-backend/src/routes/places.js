@@ -1,4 +1,4 @@
-// SnackSpot - Places Routes
+// TAGHRA - Places Routes
 // CRUD operations for places with geolocation
 
 const express = require('express');

@@ -1,4 +1,4 @@
-// SnackSpot - Premium Button Component
+// TAGHRA - Premium Button Component
 // A versatile button component with multiple variants and states
 
 import React from 'react';

@@ -1,4 +1,4 @@
-// SnackSpot - Cart Context
+// TAGHRA - Cart Context
 // Manages shopping cart state for ordering food
 
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';

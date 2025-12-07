@@ -1,4 +1,4 @@
-// SnackSpot - App Navigator
+// TAGHRA - App Navigator
 // Root navigation that handles auth state
 
 import React from 'react';
@@ -176,6 +176,24 @@ const AppNavigator = () => {
             text: colors.text,
             border: colors.border,
             notification: colors.error,
+        },
+        fonts: {
+            regular: {
+                fontFamily: 'System',
+                fontWeight: '400',
+            },
+            medium: {
+                fontFamily: 'System',
+                fontWeight: '500',
+            },
+            bold: {
+                fontFamily: 'System',
+                fontWeight: '700',
+            },
+            heavy: {
+                fontFamily: 'System',
+                fontWeight: '900',
+            },
         },
     };
 

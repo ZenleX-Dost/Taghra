@@ -1,20 +1,24 @@
-// Placeholder screens for SnackSpot
+// Placeholder screens for TAGHRA
 // These are minimal placeholders to complete navigation
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTheme } from '../../context/ThemeContext';
-import Button from '../../components/common/Button';
+import { useTheme } from '../context/ThemeContext';
+import Button from '../components/common/Button';
 
 const PlaceholderScreen = ({ navigation, route, title }) => {
     const { colors } = useTheme();
+    const canGoBack = navigation.canGoBack();
+    
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={styles.content}>
                 <Text style={[styles.title, { color: colors.text }]}>{title || route.name}</Text>
                 <Text style={[styles.subtitle, { color: colors.textMuted }]}>Coming Soon</Text>
-                <Button title="Go Back" variant="outline" onPress={() => navigation.goBack()} style={{ marginTop: 20 }} />
+                {canGoBack && (
+                    <Button title="Go Back" variant="outline" onPress={() => navigation.goBack()} style={{ marginTop: 20 }} />
+                )}
             </View>
         </SafeAreaView>
     );

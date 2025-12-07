@@ -1,4 +1,4 @@
-// SnackSpot - Admin Routes
+// TAGHRA - Admin Routes
 // Administrative document guide
 
 const express = require('express');

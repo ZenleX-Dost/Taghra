@@ -1,4 +1,4 @@
-// SnackSpot - Users Routes
+// TAGHRA - Users Routes
 // User profile and gamification
 
 const express = require('express');

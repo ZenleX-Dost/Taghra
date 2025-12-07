@@ -1,4 +1,4 @@
--- SnackSpot Database Schema
+-- TAGHRA Database Schema
 -- PostgreSQL with PostGIS extension
 
 -- Enable PostGIS extension

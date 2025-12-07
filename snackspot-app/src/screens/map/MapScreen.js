@@ -1,4 +1,4 @@
-// SnackSpot - Map Screen
+// TAGHRA - Map Screen
 // Main interactive map screen with geolocation and place markers
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';

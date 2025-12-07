@@ -1,4 +1,4 @@
-// SnackSpot - Auth Navigator
+// TAGHRA - Auth Navigator
 // Stack navigation for authentication screens
 
 import React from 'react';

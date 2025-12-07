@@ -1,4 +1,4 @@
-// SnackSpot - Utility Helper Functions
+// TAGHRA - Utility Helper Functions
 
 /**
  * Format distance from meters to human-readable format

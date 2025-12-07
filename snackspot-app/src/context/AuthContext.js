@@ -1,4 +1,4 @@
-// SnackSpot - Authentication Context
+// TAGHRA - Authentication Context
 // Manages user authentication state, login, logout, and session persistence
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';

@@ -1,4 +1,4 @@
-// SnackSpot - Subs Routes
+// TAGHRA - Subs Routes
 // Ambassador (Sub) place submissions
 
 const express = require('express');
