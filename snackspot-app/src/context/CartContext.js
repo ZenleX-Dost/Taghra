@@ -1,4 +1,4 @@
-// SnackSpot - Cart Context
+// Taghra - Cart Context
 // Manages shopping cart state for ordering food
 
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SERVICE_FEE } from '../utils/constants';
 
 // Storage key
-const CART_KEY = '@snackspot_cart';
+const CART_KEY = '@Taghra_cart';
 
 // Create context
 const CartContext = createContext(null);

@@ -1,4 +1,4 @@
-// SnackSpot - Main App Entry Point
+// Taghra - Main App Entry Point
 // Root component that sets up providers and navigation
 
 import React from 'react';

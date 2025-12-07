@@ -1,4 +1,4 @@
-// SnackSpot - Health Screen (Doctors/Vets)
+// Taghra - Health Screen (Doctors/Vets)
 // Browse and search healthcare professionals
 
 import React, { useState } from 'react';

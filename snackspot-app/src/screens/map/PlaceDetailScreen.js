@@ -1,4 +1,4 @@
-// SnackSpot - Place Detail Screen
+// Taghra - Place Detail Screen
 // Detailed view of a place with menu, reviews, and actions
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -101,7 +101,7 @@ const PlaceDetailScreen = ({ navigation, route }) => {
     const handleShare = async () => {
         try {
             await Share.share({
-                message: `Check out ${place.name} on SnackSpot! ${place.address}`,
+                message: `Check out ${place.name} on Taghra! ${place.address}`,
             });
         } catch (error) {
             console.error('Error sharing:', error);
@@ -155,7 +155,13 @@ const PlaceDetailScreen = ({ navigation, route }) => {
                     <View style={styles.headerContent}>
                         <TouchableOpacity
                             style={styles.headerButton}
-                            onPress={() => navigation.goBack()}
+                            onPress={() => {
+                                if (navigation.canGoBack()) {
+                                    navigation.goBack();
+                                } else {
+                                    navigation.navigate('MainTabs');
+                                }
+                            }}
                         >
                             <Ionicons name="arrow-back" size={24} color={colors.text} />
                         </TouchableOpacity>
@@ -243,7 +249,13 @@ const PlaceDetailScreen = ({ navigation, route }) => {
                     <SafeAreaView style={styles.photoOverlay} edges={['top']}>
                         <TouchableOpacity
                             style={[styles.overlayButton, { backgroundColor: 'rgba(0,0,0,0.5)' }]}
-                            onPress={() => navigation.goBack()}
+                            onPress={() => {
+                                if (navigation.canGoBack()) {
+                                    navigation.goBack();
+                                } else {
+                                    navigation.navigate('MainTabs');
+                                }
+                            }}
                         >
                             <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
                         </TouchableOpacity>

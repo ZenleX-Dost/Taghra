@@ -1,11 +1,11 @@
-// Placeholder screens for SnackSpot
+// Placeholder screens for Taghra
 // These are minimal placeholders to complete navigation
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTheme } from '../../context/ThemeContext';
-import Button from '../../components/common/Button';
+import { useTheme } from '../context/ThemeContext';
+import Button from '../components/common/Button';
 
 const PlaceholderScreen = ({ navigation, route, title }) => {
     const { colors } = useTheme();

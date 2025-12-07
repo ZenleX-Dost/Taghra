@@ -1,7 +1,8 @@
--- Taghra Database Schema
--- PostgreSQL with PostGIS extension
+-- Taghra Complete Database Schema for Supabase
+-- This is the FULL schema with all tables your app needs
+-- Run this INSTEAD of the previous schema
 
--- Enable PostGIS extension
+-- Enable extensions
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -9,7 +10,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- USERS & AUTHENTICATION
 -- ============================================
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
@@ -25,7 +26,7 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE refresh_tokens (
+CREATE TABLE IF NOT EXISTS refresh_tokens (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     token TEXT NOT NULL,
@@ -33,14 +34,14 @@ CREATE TABLE refresh_tokens (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_refresh_tokens_user ON refresh_tokens(user_id);
-CREATE INDEX idx_refresh_tokens_token ON refresh_tokens(token);
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id);
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token ON refresh_tokens(token);
 
 -- ============================================
 -- PLACES
 -- ============================================
 
-CREATE TABLE places (
+CREATE TABLE IF NOT EXISTS places (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     owner_id UUID REFERENCES users(id),
     name VARCHAR(100) NOT NULL,
@@ -63,17 +64,18 @@ CREATE TABLE places (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_places_location ON places USING GIST(location);
-CREATE INDEX idx_places_category ON places(category);
-CREATE INDEX idx_places_rating ON places(rating DESC);
+CREATE INDEX IF NOT EXISTS idx_places_location ON places USING GIST(location);
+CREATE INDEX IF NOT EXISTS idx_places_category ON places(category);
+CREATE INDEX IF NOT EXISTS idx_places_rating ON places(rating DESC);
 
 -- ============================================
 -- DOCTORS (for health/vet places)
 -- ============================================
 
-CREATE TABLE doctors (
+CREATE TABLE IF NOT EXISTS doctors (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     place_id UUID REFERENCES places(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
     specialty VARCHAR(100),
     consultation_fee DECIMAL(10, 2),
     education TEXT,
@@ -82,22 +84,22 @@ CREATE TABLE doctors (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE doctor_availability (
+CREATE TABLE IF NOT EXISTS doctor_availability (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    doctor_id UUID REFERENCES places(id) ON DELETE CASCADE,
+    doctor_id UUID REFERENCES doctors(id) ON DELETE CASCADE,
     date DATE NOT NULL,
     time_slot TIME NOT NULL,
     is_booked BOOLEAN DEFAULT FALSE,
     UNIQUE (doctor_id, date, time_slot)
 );
 
-CREATE INDEX idx_doctor_availability ON doctor_availability(doctor_id, date);
+CREATE INDEX IF NOT EXISTS idx_doctor_availability ON doctor_availability(doctor_id, date);
 
 -- ============================================
 -- MENU (for food places)
 -- ============================================
 
-CREATE TABLE menu_categories (
+CREATE TABLE IF NOT EXISTS menu_categories (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     place_id UUID REFERENCES places(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
@@ -105,7 +107,7 @@ CREATE TABLE menu_categories (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE menu_items (
+CREATE TABLE IF NOT EXISTS menu_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     category_id UUID REFERENCES menu_categories(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
@@ -121,7 +123,7 @@ CREATE TABLE menu_items (
 -- REVIEWS
 -- ============================================
 
-CREATE TABLE reviews (
+CREATE TABLE IF NOT EXISTS reviews (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     place_id UUID REFERENCES places(id) ON DELETE CASCADE,
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -135,14 +137,14 @@ CREATE TABLE reviews (
     UNIQUE (place_id, user_id)
 );
 
-CREATE INDEX idx_reviews_place ON reviews(place_id);
-CREATE INDEX idx_reviews_user ON reviews(user_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_place ON reviews(place_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_user ON reviews(user_id);
 
 -- ============================================
 -- ORDERS
 -- ============================================
 
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id),
     place_id UUID REFERENCES places(id),
@@ -158,18 +160,19 @@ CREATE TABLE orders (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_orders_user ON orders(user_id);
-CREATE INDEX idx_orders_place ON orders(place_id);
-CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
+CREATE INDEX IF NOT EXISTS idx_orders_place ON orders(place_id);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 
 -- ============================================
 -- APPOINTMENTS
 -- ============================================
 
-CREATE TABLE appointments (
+CREATE TABLE IF NOT EXISTS appointments (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id),
-    doctor_id UUID REFERENCES places(id),
+    place_id UUID REFERENCES places(id),
+    doctor_id UUID REFERENCES doctors(id),
     date DATE NOT NULL,
     time_slot TIME NOT NULL,
     reason TEXT,
@@ -180,15 +183,15 @@ CREATE TABLE appointments (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_appointments_user ON appointments(user_id);
-CREATE INDEX idx_appointments_doctor ON appointments(doctor_id);
-CREATE INDEX idx_appointments_date ON appointments(date);
+CREATE INDEX IF NOT EXISTS idx_appointments_user ON appointments(user_id);
+CREATE INDEX IF NOT EXISTS idx_appointments_doctor ON appointments(doctor_id);
+CREATE INDEX IF NOT EXISTS idx_appointments_date ON appointments(date);
 
 -- ============================================
 -- ADMIN DOCUMENTS
 -- ============================================
 
-CREATE TABLE admin_documents (
+CREATE TABLE IF NOT EXISTS admin_documents (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(200) NOT NULL,
     description TEXT,
@@ -206,7 +209,7 @@ CREATE TABLE admin_documents (
 -- SUB SUBMISSIONS
 -- ============================================
 
-CREATE TABLE place_submissions (
+CREATE TABLE IF NOT EXISTS place_submissions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     sub_id UUID REFERENCES users(id),
     name VARCHAR(100) NOT NULL,
@@ -223,14 +226,14 @@ CREATE TABLE place_submissions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_submissions_sub ON place_submissions(sub_id);
-CREATE INDEX idx_submissions_status ON place_submissions(status);
+CREATE INDEX IF NOT EXISTS idx_submissions_sub ON place_submissions(sub_id);
+CREATE INDEX IF NOT EXISTS idx_submissions_status ON place_submissions(status);
 
 -- ============================================
 -- GAMIFICATION
 -- ============================================
 
-CREATE TABLE badges (
+CREATE TABLE IF NOT EXISTS badges (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL,
     description TEXT,
@@ -239,7 +242,7 @@ CREATE TABLE badges (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE user_badges (
+CREATE TABLE IF NOT EXISTS user_badges (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     badge_id UUID REFERENCES badges(id) ON DELETE CASCADE,
@@ -247,7 +250,7 @@ CREATE TABLE user_badges (
     UNIQUE (user_id, badge_id)
 );
 
-CREATE TABLE points_history (
+CREATE TABLE IF NOT EXISTS points_history (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     points INTEGER NOT NULL,
@@ -256,13 +259,13 @@ CREATE TABLE points_history (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_points_history_user ON points_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_points_history_user ON points_history(user_id);
 
 -- ============================================
 -- NOTIFICATIONS
 -- ============================================
 
-CREATE TABLE notifications (
+CREATE TABLE IF NOT EXISTS notifications (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     title VARCHAR(200) NOT NULL,
@@ -273,10 +276,10 @@ CREATE TABLE notifications (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_notifications_user ON notifications(user_id);
-CREATE INDEX idx_notifications_unread ON notifications(user_id, is_read) WHERE is_read = FALSE;
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(user_id, is_read) WHERE is_read = FALSE;
 
-CREATE TABLE device_tokens (
+CREATE TABLE IF NOT EXISTS device_tokens (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     token TEXT NOT NULL,
@@ -299,7 +302,8 @@ INSERT INTO badges (name, description, icon, points_required) VALUES
 ('Ambassador', 'First place submitted', 'flag', 0),
 ('Silver', 'Reached 100 points', 'medal', 100),
 ('Gold', 'Reached 500 points', 'trophy', 500),
-('Platinum', 'Reached 1000 points', 'diamond', 1000);
+('Platinum', 'Reached 1000 points', 'diamond', 1000)
+ON CONFLICT DO NOTHING;
 
 -- Insert sample admin documents
 INSERT INTO admin_documents (name, description, category, required_documents, processing_time) VALUES
@@ -307,4 +311,5 @@ INSERT INTO admin_documents (name, description, category, required_documents, pr
 ('Passeport Biométrique', 'Passeport marocain biométrique', 'Travel', ARRAY['CNIE', 'Extrait d''acte de naissance', '2 photos d''identité', 'Ancien passeport (si renouvellement)'], '2-4 weeks'),
 ('Permis de Conduire', 'Permis de conduire marocain', 'Transport', ARRAY['CNIE', 'Certificat médical', 'Photos d''identité', 'Attestation de formation'], '2-3 weeks'),
 ('Extrait d''Acte de Naissance', 'Copie intégrale ou extrait', 'Civil Status', ARRAY['CNIE du demandeur'], '1-3 days'),
-('Certificat de Résidence', 'Attestation de domicile', 'Residence', ARRAY['CNIE', 'Justificatif de domicile'], '1-2 days');
+('Certificat de Résidence', 'Attestation de domicile', 'Residence', ARRAY['CNIE', 'Justificatif de domicile'], '1-2 days')
+ON CONFLICT DO NOTHING;

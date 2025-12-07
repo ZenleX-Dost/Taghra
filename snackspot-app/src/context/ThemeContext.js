@@ -1,4 +1,4 @@
-// SnackSpot - Theme Context
+// Taghra - Theme Context
 // Manages app theming (light/dark mode) and provides theme values
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
@@ -7,7 +7,7 @@ import { useColorScheme } from 'react-native';
 import { COLORS, FONTS, SPACING, DIMENSIONS, SHADOWS } from '../utils/constants';
 
 // Storage key
-const THEME_KEY = '@snackspot_theme';
+const THEME_KEY = '@Taghra_theme';
 
 // Create context
 const ThemeContext = createContext(null);

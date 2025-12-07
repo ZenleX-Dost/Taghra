@@ -1,4 +1,4 @@
-// SnackSpot - Location Hook
+// Taghra - Location Hook
 // Custom hook for managing user geolocation
 
 import { useState, useEffect, useCallback, useRef } from 'react';

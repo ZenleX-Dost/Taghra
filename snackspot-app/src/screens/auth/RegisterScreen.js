@@ -1,4 +1,4 @@
-// SnackSpot - Register Screen
+// Taghra - Register Screen
 // Premium registration screen with form validation
 
 import React, { useState } from 'react';
@@ -207,7 +207,7 @@ const RegisterScreen = ({ navigation }) => {
                             Create Account
                         </Text>
                         <Text style={[styles.subtitle, { color: colors.textLight }]}>
-                            Join SnackSpot and start exploring
+                            Join Taghra and start exploring
                         </Text>
                     </View>
 

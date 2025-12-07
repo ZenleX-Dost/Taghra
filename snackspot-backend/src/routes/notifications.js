@@ -1,4 +1,4 @@
-// SnackSpot - Notifications Routes
+// Taghra - Notifications Routes
 // Push notifications and in-app notifications
 
 const express = require('express');

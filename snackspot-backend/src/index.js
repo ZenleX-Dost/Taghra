@@ -1,4 +1,4 @@
-// SnackSpot Backend - Main Entry Point
+// Taghra Backend - Main Entry Point
 // Express server with Socket.io for real-time features
 
 require('dotenv').config();
@@ -170,7 +170,7 @@ server.listen(PORT, () => {
     console.log(`
   ╔═══════════════════════════════════════════╗
   ║                                           ║
-  ║   🍔 SnackSpot API Server                 ║
+  ║   🍔 Taghra API Server                 ║
   ║                                           ║
   ║   Running on: http://localhost:${PORT}       ║
   ║   Environment: ${process.env.NODE_ENV || 'development'}             ║

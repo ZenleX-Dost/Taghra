@@ -1,11 +1,16 @@
-// SnackSpot - Firebase Configuration
+// Taghra - Firebase Configuration
 // Initialize Firebase Admin SDK
 
 const admin = require('firebase-admin');
 
+let firebaseInitialized = false;
+
 try {
-    // Check if environment variables are set
-    if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
+    // Check if environment variables are set and valid
+    if (process.env.FIREBASE_PROJECT_ID && 
+        process.env.FIREBASE_PRIVATE_KEY && 
+        process.env.FIREBASE_CLIENT_EMAIL &&
+        process.env.FIREBASE_PRIVATE_KEY.includes('BEGIN PRIVATE KEY')) {
 
         // Format private key (handle newlines)
         const privateKey = process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n');
@@ -18,15 +23,17 @@ try {
             }),
         });
 
+        firebaseInitialized = true;
         console.log('🔥 Firebase Admin initialized successfully');
     } else {
-        console.warn('⚠️ Firebase credentials missing in .env. Push notifications will not work.');
+        console.log('ℹ️  Firebase not configured. Push notifications disabled (optional feature).');
     }
 } catch (error) {
-    console.error('❌ Error initializing Firebase Admin:', error.message);
+    console.log('ℹ️  Firebase initialization skipped:', error.message);
+    console.log('   Push notifications will be disabled (optional feature).');
 }
 
-const messaging = admin.apps.length ? admin.messaging() : null;
+const messaging = firebaseInitialized && admin.apps.length ? admin.messaging() : null;
 
 /**
  * Send a push notification to a specific device

@@ -1,4 +1,4 @@
-// SnackSpot - Main Tab Navigator
+// Taghra - Main Tab Navigator
 // Bottom tab navigation for authenticated users
 
 import React from 'react';

@@ -1,9 +1,9 @@
-// SnackSpot - Places Routes
+// Taghra - Places Routes
 // CRUD operations for places with geolocation
 
 const express = require('express');
 const { body, query, validationResult } = require('express-validator');
-const db = require('../config/database');
+const Database = require('../utils/database');
 const { asyncHandler, createError } = require('../middleware/errorHandler');
 const { authenticate, optionalAuth } = require('../middleware/auth');
 
@@ -40,61 +40,20 @@ router.get('/nearby',
             offset = 0,
         } = req.query;
 
-        // Build query with PostGIS
-        let queryText = `
-      SELECT 
-        p.id,
-        p.name,
-        p.category,
-        p.description,
-        p.address,
-        p.phone,
-        ST_Y(p.location::geometry) as latitude,
-        ST_X(p.location::geometry) as longitude,
-        ST_Distance(
-          p.location,
-          ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography
-        ) as distance,
-        p.rating,
-        p.review_count,
-        p.price_level,
-        p.is_open,
-        p.photos,
-        p.created_at
-      FROM places p
-      WHERE ST_DWithin(
-        p.location,
-        ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography,
-        $3
-      )
-    `;
+        // Use custom PostgreSQL function for nearby places
+        const { data: places, error } = await Database.rpc('get_nearby_places', {
+            lat: parseFloat(lat),
+            lng: parseFloat(lng),
+            radius_meters: parseInt(radius),
+            place_category: category || null,
+            is_open_filter: open !== undefined ? (open === 'true') : null,
+            result_limit: parseInt(limit),
+            result_offset: parseInt(offset)
+        });
 
-        const params = [lng, lat, radius];
-        let paramIndex = 4;
-
-        // Add category filter
-        if (category) {
-            queryText += ` AND p.category = $${paramIndex}`;
-            params.push(category);
-            paramIndex++;
+        if (error) {
+            throw createError.internal('Failed to fetch nearby places');
         }
-
-        // Add open filter
-        if (open !== undefined) {
-            queryText += ` AND p.is_open = $${paramIndex}`;
-            params.push(open === 'true');
-            paramIndex++;
-        }
-
-        // Order by distance and add pagination
-        queryText += `
-      ORDER BY distance
-      LIMIT $${paramIndex}
-      OFFSET $${paramIndex + 1}
-    `;
-        params.push(limit, offset);
-
-        const result = await db.query(queryText, params);
 
         res.json({
             success: true,

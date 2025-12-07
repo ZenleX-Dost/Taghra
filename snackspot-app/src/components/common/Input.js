@@ -1,4 +1,4 @@
-// SnackSpot - Premium Input Component
+// Taghra - Premium Input Component
 // A versatile input component with validation and styling
 
 import React, { useState, useRef } from 'react';

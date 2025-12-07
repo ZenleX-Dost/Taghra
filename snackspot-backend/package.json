@@ -1,7 +1,7 @@
 {
-  "name": "snackspot-backend",
+  "name": "Taghra-backend",
   "version": "1.0.0",
-  "description": "SnackSpot API Server - Geolocation services for Morocco",
+  "description": "Taghra API Server - Geolocation services for Morocco",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
@@ -10,6 +10,7 @@
     "db:seed": "node src/db/seed.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.86.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -28,11 +29,11 @@
     "nodemon": "^3.0.2"
   },
   "keywords": [
-    "snackspot",
+    "Taghra",
     "geolocation",
     "morocco",
     "api"
   ],
-  "author": "SnackSpot Team",
+  "author": "Taghra Team",
   "license": "ISC"
 }

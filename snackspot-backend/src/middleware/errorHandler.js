@@ -1,4 +1,4 @@
-// SnackSpot - Error Handler Middleware
+// Taghra - Error Handler Middleware
 // Centralized error handling
 
 /**

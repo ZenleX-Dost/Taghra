@@ -1,4 +1,4 @@
-// SnackSpot - App Navigator
+// Taghra - App Navigator
 // Root navigation that handles auth state
 
 import React from 'react';

@@ -1,4 +1,4 @@
-// SnackSpot - API Service
+// Taghra - API Service
 // Axios instance with interceptors for authentication and error handling
 
 import axios from 'axios';
@@ -6,8 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_CONFIG } from '../utils/constants';
 
 // Storage keys
-const TOKEN_KEY = '@snackspot_token';
-const REFRESH_TOKEN_KEY = '@snackspot_refresh_token';
+const TOKEN_KEY = '@Taghra_token';
+const REFRESH_TOKEN_KEY = '@Taghra_refresh_token';
 
 /**
  * Create axios instance with default configuration
@@ -147,7 +147,7 @@ api.interceptors.response.use(
  */
 const clearAuthData = async () => {
     try {
-        await AsyncStorage.multiRemove([TOKEN_KEY, REFRESH_TOKEN_KEY, '@snackspot_user']);
+        await AsyncStorage.multiRemove([TOKEN_KEY, REFRESH_TOKEN_KEY, '@Taghra_user']);
     } catch (error) {
         console.error('Error clearing auth data:', error);
     }

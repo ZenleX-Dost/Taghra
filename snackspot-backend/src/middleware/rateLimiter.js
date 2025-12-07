@@ -1,4 +1,4 @@
-// SnackSpot - Rate Limiter Middleware
+// Taghra - Rate Limiter Middleware
 // Prevents abuse by limiting request rates
 
 const rateLimit = {};

@@ -1,8 +1,8 @@
-// SnackSpot - Authentication Middleware
-// JWT token verification and user extraction
+// Taghra - Authentication Middleware
+// JWT token verification and user extraction (Supabase compatible)
 
 const jwt = require('jsonwebtoken');
-const db = require('../config/database');
+const Database = require('../utils/database');
 const { createError } = require('./errorHandler');
 
 /**
@@ -22,18 +22,19 @@ const authenticate = async (req, res, next) => {
         // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Get user from database
-        const result = await db.query(
-            'SELECT id, email, full_name, role, points, created_at FROM users WHERE id = $1',
-            [decoded.userId]
-        );
+        // Get user from database using Supabase
+        const { data: user, error } = await Database.select('users', {
+            columns: 'id, email, full_name, role, points, created_at',
+            filters: { id: decoded.userId },
+            single: true
+        });
 
-        if (result.rows.length === 0) {
+        if (error || !user) {
             throw createError.unauthorized('User not found');
         }
 
         // Attach user to request
-        req.user = result.rows[0];
+        req.user = user;
         next();
     } catch (error) {
         if (error.name === 'JsonWebTokenError') {
@@ -60,13 +61,14 @@ const optionalAuth = async (req, res, next) => {
         const token = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        const result = await db.query(
-            'SELECT id, email, full_name, role, points FROM users WHERE id = $1',
-            [decoded.userId]
-        );
+        const { data: user } = await Database.select('users', {
+            columns: 'id, email, full_name, role, points',
+            filters: { id: decoded.userId },
+            single: true
+        });
 
-        if (result.rows.length > 0) {
-            req.user = result.rows[0];
+        if (user) {
+            req.user = user;
         }
 
         next();

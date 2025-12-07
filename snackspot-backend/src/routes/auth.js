@@ -1,11 +1,11 @@
-// SnackSpot - Authentication Routes
+// Taghra - Authentication Routes
 // Register, login, refresh token, etc.
 
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
-const db = require('../config/database');
+const Database = require('../utils/database');
 const { asyncHandler, createError } = require('../middleware/errorHandler');
 const { authenticate } = require('../middleware/auth');
 
@@ -52,12 +52,13 @@ router.post('/register',
         const { email, password, fullName, phone, role = 'user' } = req.body;
 
         // Check if user exists
-        const existingUser = await db.query(
-            'SELECT id FROM users WHERE email = $1',
-            [email]
-        );
+        const { data: existingUser } = await Database.select('users', {
+            columns: 'id',
+            filters: { email },
+            single: true
+        });
 
-        if (existingUser.rows.length > 0) {
+        if (existingUser) {
             throw createError.conflict('Email already registered');
         }
 
@@ -66,23 +67,30 @@ router.post('/register',
         const passwordHash = await bcrypt.hash(password, salt);
 
         // Create user
-        const result = await db.query(
-            `INSERT INTO users (email, password_hash, full_name, phone, role, points)
-       VALUES ($1, $2, $3, $4, $5, 0)
-       RETURNING id, email, full_name, phone, role, points, created_at`,
-            [email, passwordHash, fullName, phone, role]
-        );
+        const { data: newUsers, error: insertError } = await Database.insert('users', {
+            email,
+            password_hash: passwordHash,
+            full_name: fullName,
+            phone,
+            role,
+            points: 0
+        });
 
-        const user = result.rows[0];
+        if (insertError) {
+            throw createError.internal('Failed to create user');
+        }
+
+        const user = newUsers[0];
 
         // Generate tokens
         const { accessToken, refreshToken } = generateTokens(user.id);
 
         // Store refresh token
-        await db.query(
-            'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, NOW() + INTERVAL \'30 days\')',
-            [user.id, refreshToken]
-        );
+        await Database.insert('refresh_tokens', {
+            user_id: user.id,
+            token: refreshToken,
+            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        });
 
         res.status(201).json({
             success: true,
@@ -119,16 +127,15 @@ router.post('/login',
         const { email, password } = req.body;
 
         // Get user
-        const result = await db.query(
-            'SELECT id, email, password_hash, full_name, phone, role, points FROM users WHERE email = $1',
-            [email]
-        );
+        const { data: user, error } = await Database.select('users', {
+            columns: 'id, email, password_hash, full_name, phone, role, points',
+            filters: { email },
+            single: true
+        });
 
-        if (result.rows.length === 0) {
+        if (error || !user) {
             throw createError.unauthorized('Invalid email or password');
         }
-
-        const user = result.rows[0];
 
         // Verify password
         const isValidPassword = await bcrypt.compare(password, user.password_hash);
@@ -140,15 +147,16 @@ router.post('/login',
         const { accessToken, refreshToken } = generateTokens(user.id);
 
         // Store refresh token
-        await db.query(
-            'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, NOW() + INTERVAL \'30 days\')',
-            [user.id, refreshToken]
-        );
+        await Database.insert('refresh_tokens', {
+            user_id: user.id,
+            token: refreshToken,
+            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        });
 
         // Update last login
-        await db.query(
-            'UPDATE users SET last_login = NOW() WHERE id = $1',
-            [user.id]
+        await Database.update('users', 
+            { last_login: new Date().toISOString() },
+            { id: user.id }
         );
 
         res.json({
@@ -190,29 +198,31 @@ router.post('/refresh-token',
         }
 
         // Check if token exists in database
-        const tokenResult = await db.query(
-            'SELECT id FROM refresh_tokens WHERE token = $1 AND user_id = $2 AND expires_at > NOW()',
-            [refreshToken, decoded.userId]
-        );
+        const { data: tokenData } = await Database.select('refresh_tokens', {
+            columns: 'id',
+            filters: { 
+                token: refreshToken,
+                user_id: decoded.userId
+            },
+            single: true
+        });
 
-        if (tokenResult.rows.length === 0) {
+        if (!tokenData) {
             throw createError.unauthorized('Refresh token expired or revoked');
         }
 
         // Delete old refresh token
-        await db.query(
-            'DELETE FROM refresh_tokens WHERE token = $1',
-            [refreshToken]
-        );
+        await Database.delete('refresh_tokens', { token: refreshToken });
 
         // Generate new tokens
         const { accessToken: newAccessToken, refreshToken: newRefreshToken } = generateTokens(decoded.userId);
 
         // Store new refresh token
-        await db.query(
-            'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, NOW() + INTERVAL \'30 days\')',
-            [decoded.userId, newRefreshToken]
-        );
+        await Database.insert('refresh_tokens', {
+            user_id: decoded.userId,
+            token: newRefreshToken,
+            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        });
 
         res.json({
             success: true,
@@ -228,10 +238,7 @@ router.post('/refresh-token',
  */
 router.post('/logout', authenticate, asyncHandler(async (req, res) => {
     // Delete all refresh tokens for this user
-    await db.query(
-        'DELETE FROM refresh_tokens WHERE user_id = $1',
-        [req.user.id]
-    );
+    await Database.delete('refresh_tokens', { user_id: req.user.id });
 
     res.json({
         success: true,

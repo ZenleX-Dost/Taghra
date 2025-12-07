@@ -1,4 +1,4 @@
-// SnackSpot - Premium Design Constants
+// Taghra - Premium Design Constants
 // A modern, luxurious color palette inspired by high-end apps
 
 // PREMIUM COLOR PALETTE
@@ -235,9 +235,9 @@ export const SHADOWS = {
 
 // API CONFIGURATION
 export const API_CONFIG = {
-    BASE_URL: 'https://api.snackspot.ma/v1',
+    BASE_URL: 'https://api.Taghra.ma/v1',
     TIMEOUT: 10000,
-    SOCKET_URL: 'wss://api.snackspot.ma',
+    SOCKET_URL: 'wss://api.Taghra.ma',
 };
 
 // MAP CONFIGURATION

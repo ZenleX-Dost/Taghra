@@ -1,4 +1,4 @@
-// SnackSpot - Authentication Context
+// Taghra - Authentication Context
 // Manages user authentication state, login, logout, and session persistence
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
@@ -7,9 +7,9 @@ import api from '../services/api';
 import { USER_ROLES } from '../utils/constants';
 
 // Storage keys
-const TOKEN_KEY = '@snackspot_token';
-const USER_KEY = '@snackspot_user';
-const REFRESH_TOKEN_KEY = '@snackspot_refresh_token';
+const TOKEN_KEY = '@Taghra_token';
+const USER_KEY = '@Taghra_user';
+const REFRESH_TOKEN_KEY = '@Taghra_refresh_token';
 
 // Create context
 const AuthContext = createContext(null);
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
                     AsyncStorage.getItem(TOKEN_KEY),
                     AsyncStorage.getItem(USER_KEY),
                     AsyncStorage.getItem(REFRESH_TOKEN_KEY),
-                    AsyncStorage.getItem('@snackspot_onboarding_complete'),
+                    AsyncStorage.getItem('@Taghra_onboarding_complete'),
                 ]);
 
                 if (storedToken && storedUser) {
@@ -229,7 +229,7 @@ export const AuthProvider = ({ children }) => {
      * Mark onboarding as complete
      */
     const completeOnboarding = useCallback(async () => {
-        await AsyncStorage.setItem('@snackspot_onboarding_complete', 'true');
+        await AsyncStorage.setItem('@Taghra_onboarding_complete', 'true');
         setHasCompletedOnboarding(true);
     }, []);
 

@@ -1,6 +1,6 @@
-# SnackSpot Backend
+# Taghra Backend
 
-Node.js + Express API server for the SnackSpot mobile application.
+Node.js + Express API server for the Taghra mobile application.
 
 ## Features
 
@@ -36,7 +36,7 @@ Node.js + Express API server for the SnackSpot mobile application.
 1. Clone the repository
 2. Install dependencies:
    ```bash
-   cd snackspot-backend
+   cd Taghra-backend
    npm install
    ```
 
@@ -49,15 +49,15 @@ Node.js + Express API server for the SnackSpot mobile application.
 
 5. Create the database and enable PostGIS:
    ```sql
-   CREATE DATABASE snackspot;
-   \c snackspot
+   CREATE DATABASE Taghra;
+   \c Taghra
    CREATE EXTENSION postgis;
    CREATE EXTENSION "uuid-ossp";
    ```
 
 6. Run the schema migration:
    ```bash
-   psql -d snackspot -f src/db/schema.sql
+   psql -d Taghra -f src/db/schema.sql
    ```
 
 7. Start the development server:

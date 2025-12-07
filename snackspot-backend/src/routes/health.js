@@ -1,4 +1,4 @@
-// SnackSpot - Health Routes
+// Taghra - Health Routes
 // Doctors and veterinarians
 
 const express = require('express');

@@ -1,4 +1,4 @@
-// SnackSpot - Add Place Screen (Sub/Ambassador)
+// Taghra - Add Place Screen (Sub/Ambassador)
 // Form to add new places to the platform
 
 import React, { useState } from 'react';
