@@ -164,7 +164,44 @@ io.on('connection', (socket) => {
 // Start Server
 // ============================================
 
+const os = require('os');
+
+// Get local IP address (non-loopback IPv4)
+// Prioritizes WiFi and common network interfaces
+const getLocalIP = () => {
+    const interfaces = os.networkInterfaces();
+    
+    // Prioritize common WiFi interface names
+    const preferredNames = ['WiFi', 'Ethernet', 'eth0', 'en0', 'wlan0'];
+    
+    // First try preferred interfaces
+    for (const ifName of preferredNames) {
+        if (interfaces[ifName]) {
+            for (const iface of interfaces[ifName]) {
+                if (iface.family === 'IPv4' && !iface.internal) {
+                    return iface.address;
+                }
+            }
+        }
+    }
+    
+    // If not found, search all interfaces (skip virtual adapters)
+    for (const name of Object.keys(interfaces)) {
+        if (name.includes('Loopback') || name.includes('Virtual')) {
+            continue;
+        }
+        for (const iface of interfaces[name]) {
+            if (iface.family === 'IPv4' && !iface.internal) {
+                return iface.address;
+            }
+        }
+    }
+    
+    return 'localhost';
+};
+
 const PORT = process.env.PORT || 3000;
+const localIP = getLocalIP();
 
 server.listen(PORT, () => {
     console.log(`
@@ -173,10 +210,20 @@ server.listen(PORT, () => {
   ║   🍔 TAGHRA API Server                 ║
   ║                                           ║
   ║   Running on: http://localhost:${PORT}       ║
+  ║   Network:   http://${localIP}:${PORT}         ║
   ║   Environment: ${process.env.NODE_ENV || 'development'}             ║
+  ║                                           ║
+  ║   📱 For mobile (Expo):                    ║
+  ║   http://${localIP}:${PORT}/api                 ║
   ║                                           ║
   ╚═══════════════════════════════════════════╝
   `);
+    
+    // Write IP to a file for the setup script to read
+    const fs = require('fs');
+    const path = require('path');
+    const ipFile = path.join(__dirname, '..', '..', '.server-ip');
+    fs.writeFileSync(ipFile, localIP, 'utf8');
 });
 
 // Graceful shutdown
